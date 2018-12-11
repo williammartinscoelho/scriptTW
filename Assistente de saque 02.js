@@ -1,3 +1,4 @@
+$(function() {
 !function(e) {
     function t(a) {
         if (n[a])
@@ -586,3 +587,9 @@
     var r = n(1)
 }
 ]);
+
+});
+
+
+
+
