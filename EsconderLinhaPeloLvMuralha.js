@@ -6,11 +6,11 @@ $($('#plunder_list tbody tr th')[6]).append('<label>Somente:</label>');
 $($('#plunder_list tbody tr th')[6]).append('<input type="number" id="lvMuralha1" min="0" max="15" step="1">');
 
 $("#lvMuralha1").keyup(function () {
-    $('#lvMuralha2').val("")
-    let val = $('#lvMuralha1').val();
+    $('#lvMuralha2').val("");
+    let val1 = $('#lvMuralha1').val();
 
-    if (val != "") {
-        esconderLinhas1(val);
+    if (val1 != "") {
+        esconderLinhas1(val1);
     } else {
         mostrarLinhas();
     }
@@ -20,11 +20,11 @@ $($('#plunder_list tbody tr th')[6]).append('<br><label>Menos:</label>');
 $($('#plunder_list tbody tr th')[6]).append('<input type="number" id="lvMuralha2" min="0" max="15" step="1">');
 
 $("#lvMuralha2").keyup(function () {
-    $('#lvMuralha1').val("")
-    let val = $('#lvMuralha2').val();
+    $('#lvMuralha1').val("");
+    let val2 = $('#lvMuralha2').val();
 
-    if (val != "") {
-        esconderLinhas2(val);
+    if (val2 != "") {
+        esconderLinhas2(val2);
     } else {
         mostrarLinhas();
     }
