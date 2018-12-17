@@ -6,6 +6,7 @@ $($('#plunder_list tbody tr th')[6]).append('<label>Somente:</label>');
 $($('#plunder_list tbody tr th')[6]).append('<input type="number" id="lvMuralha1" min="0" max="15" step="1">');
 
 $("#lvMuralha1").keyup(function () {
+    $('#lvMuralha2').val("")
     let val = $('#lvMuralha1').val();
 
     if (val != "") {
@@ -19,6 +20,7 @@ $($('#plunder_list tbody tr th')[6]).append('<br><label>Menos:</label>');
 $($('#plunder_list tbody tr th')[6]).append('<input type="number" id="lvMuralha2" min="0" max="15" step="1">');
 
 $("#lvMuralha2").keyup(function () {
+    $('#lvMuralha1').val("")
     let val = $('#lvMuralha2').val();
 
     if (val != "") {
@@ -45,7 +47,7 @@ function esconderLinhas1(muralha = 0) {
     });
 }
 
-function esconderLinhas1(muralha = 0) {
+function esconderLinhas2(muralha = 0) {
     let lista = $('#plunder_list tr');
 
     $(lista).each(function (i) {
