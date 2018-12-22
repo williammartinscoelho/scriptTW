@@ -6,12 +6,12 @@ var html = `
             <legend>Filtrar Muralha</legend>
 
             <div style="max-width: 25%; display: inline-block; margin-right: 25px;">
-                <label>Mostrar Somente Lv: </label><br>
+                <label>Mostrar Lv = á: </label><br>
                 <input type="number" id="mostrarSomente" min="0" max="20" step="1"/>
             </div>
 
             <div style="max-width: 25%; display: inline-block; margin-right: 25px;">
-                <label>Esconder Somente Lv: </label><br>
+                <label>Mostar Lv != de: </label><br>
                 <input type="number" id="esconderSomente" min="0" max="20" step="1"/>
             </div>
 
