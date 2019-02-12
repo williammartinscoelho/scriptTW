@@ -13,6 +13,8 @@
     'use strict';
     //$.getScript('https://cdn.jsdelivr.net/gh/williammartinscoelho/scriptTW/assistente02.js');
 
+    var qtdAtks = 0;
+
     var listaDeLinhas = $('body').find('tr[id^=village_]');
     var tamanhoListaLinhas = listaDeLinhas.length;
     var indexListaLinhas = 0;
@@ -21,21 +23,36 @@
         setTotalRecursos(this, getTotalResursos2(this));
     });
 
+    
+
     var interval_farm = setInterval(
         function () {
+            $('title')[0].innerText = `FARM ${location.host.substring(0,4).toUpperCase()}`;
+
             if ($('#bot_check')[0] != undefined) {
                 console.log('RECAPTCHA ATIVO');
-                UI.ErrorMessage("RECAPTCHA ATIVO");
-                $("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
+                //UI.ErrorMessage("RECAPTCHA ATIVO");
+                //$("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
                 clearInterval(interval_farm);
                 console.log('FARM DESATIVADO!');
-                UI.SuccesMessage("FARM DESATIVADO!");
+                //UI.SuccessMessage("FARM DESATIVADO!");
 
-                console.log('RELOAD EM 3 SEGUNDOS');
-                UI.SuccesMessage("RELOAD EM 3 SEGUNDOS");
-                setTimeout(function () {
-                    location.reload();
-                }, 3000);
+
+                setTimeout( //VERIFICAR SE TEM IMAGEM NO CAPTCHA
+                    function () {
+                        if ($('.g-recaptcha-bubble-arrow')[0] == undefined) {
+                            console.log('RELOAD EM 5 SEGUNDOS');
+                            //UI.SuccessMessage("RELOAD EM 10 SEGUNDOS");
+                            setTimeout(function () {
+                                location.reload();
+                            }, 10000);
+                        } else {
+                            console.log('IMAGEM');
+                            $("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
+                            //alert("IMAGEM");
+                        }
+                    }, 3500
+                );
             }
 
             //let tempo = Math.floor((Math.random() * 350) + 100);
@@ -49,21 +66,38 @@
             // );
 
 
-            farmar(listaDeLinhas[indexListaLinhas], indexListaLinhas);
-            listaDeLinhas = $('body').find('tr[id^=village_]');
-            tamanhoListaLinhas = listaDeLinhas.length;
+            if (tamanhoListaLinhas > 0) { // SE TIVER RELATORIO
+                farmar(listaDeLinhas[indexListaLinhas], indexListaLinhas);
+                //Nova lista
+                listaDeLinhas = $('body').find('tr[id^=village_]');
+                //Novo tamanho de lista
+                tamanhoListaLinhas = listaDeLinhas.length;
 
-            indexListaLinhas += 1;
+                indexListaLinhas += 1;
 
-            if (indexListaLinhas >= tamanhoListaLinhas) {
-                //location.reload();
-                trocarAldeia();
+                if (indexListaLinhas >= tamanhoListaLinhas) {
+                    //location.reload();
+                    trocarAldeia();
+                }
+            } else {
+                clearInterval(interval_farm);
+
+                setTimeout(
+                    function () {
+                        location.reload();
+                    }, 600000 //10 minutos 
+                );
             }
         }, 350
     );
 
     function farmar(tr, i) {
         setIndex(tr, i);
+
+        if (qtdAtks >= 10 && $('#village_switch_right')[0] != undefined) {
+            qtdAtks = 0;
+            trocarAldeia();
+        }
 
         let valDistanciaMax = 22;
         let valDistancia = getDistanciaAtk(tr);
@@ -87,6 +121,7 @@
             console.log(tempAtk, 'RELATORIO VELHO!');
             UI.ErrorMessage("RELATORIO VELHO!");
             farmB(tr);
+            qtdAtks += 1;
         } else if (false/*valMuralha == 0 && valRecursos >= 875 && qtdTropasAtk != 0*/) {
             console.log('MURALHA ZERO, FARM N!');
             UI.SuccessMessage("MURALHA ZERO, FARM N!");
@@ -95,11 +130,16 @@
             console.log('SEM CVL, MUITOS RECURSOS, FARM N!');
             UI.SuccessMessage("SEM CVL, MUITOS RECURSOS, FARM N!");
             farmN(tr, qtdTropasAtk);
-        } else if ((valMuralha <= 1 && valRecursos >= 4 * 80 && tropasDiponivel.light >= 4) || (valMuralha >= 2 && valRecursos >= 1000 && tropasDiponivel.light > 0)) {
+        } else if (
+            (valMuralha <= 1 && valRecursos >= (4 * 80) && tropasDiponivel.light >= 4) ||
+            (valMuralha >= 2 && valRecursos >= 2000 && tropasDiponivel.light > 4)) {
             console.log('SEM TROPAS, MUITOS RECURSOS, FARM C!');
             UI.SuccessMessage("SEM TROPAS, MUITOS RECURSOS, FARM C!");
             farmC(tr);
+            qtdAtks += 1;
         }
+
+
     }
 
 
@@ -341,6 +381,10 @@
     }
 
     function trocarAldeia() {
-        $('#village_switch_right')[0].click();
+        if ($('#village_switch_right')[0] == undefined) {
+            location.reload();
+        } else {
+            $('#village_switch_right')[0].click();
+        }
     }
 })();
