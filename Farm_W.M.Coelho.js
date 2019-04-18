@@ -11,7 +11,8 @@
 
 (function () {
     'use strict';
-    //$.getScript('https://cdn.jsdelivr.net/gh/williammartinscoelho/scriptTW/assistente02.js');
+
+    var verificarC = false;
 
     var qtdAtks = 0;
 
@@ -19,77 +20,74 @@
     var tamanhoListaLinhas = listaDeLinhas.length;
     var indexListaLinhas = 0;
 
+    var interval_farm = null;
+
+    // Adicionar o total de recursos na lista do AS
     $(listaDeLinhas).each(function (i) {
         setTotalRecursos(this, getTotalResursos2(this));
     });
 
-    
 
-    var interval_farm = setInterval(
-        function () {
-            $('title')[0].innerText = `FARM ${location.host.substring(0,4).toUpperCase()}`;
+    $.ajax({
+        async: true,
+        type: 'GET',
+        url: `${$('#menu_row2_village > a')[0].href}`,
+        dataType: 'text',
+        success: function (retorno) {
+            let FarmAS = retorno.search('"name":"Farm AS","in_group":true');
 
-            if ($('#bot_check')[0] != undefined) {
-                console.log('RECAPTCHA ATIVO');
-                //UI.ErrorMessage("RECAPTCHA ATIVO");
-                //$("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
-                clearInterval(interval_farm);
-                console.log('FARM DESATIVADO!');
-                //UI.SuccessMessage("FARM DESATIVADO!");
-
-
-                setTimeout( //VERIFICAR SE TEM IMAGEM NO CAPTCHA
-                    function () {
-                        if ($('.g-recaptcha-bubble-arrow')[0] == undefined) {
-                            console.log('RELOAD EM 5 SEGUNDOS');
-                            //UI.SuccessMessage("RELOAD EM 10 SEGUNDOS");
-                            setTimeout(function () {
-                                location.reload();
-                            }, 10000);
-                        } else {
-                            console.log('IMAGEM');
-                            $("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
-                            //alert("IMAGEM");
-                        }
-                    }, 3500
-                );
-            }
-
-            //let tempo = Math.floor((Math.random() * 350) + 100);
-            //console.log('Tempo: ', tempo)
-            console.log('Linha: ', indexListaLinhas)
-
-            // setTimeout(
-            //     function () {
-            //         farmar(listaDeLinhas[indexListaLinhas], indexListaLinhas);
-            //     }, tempo
-            // );
-
-
-            if (tamanhoListaLinhas > 0) { // SE TIVER RELATORIO
-                farmar(listaDeLinhas[indexListaLinhas], indexListaLinhas);
-                //Nova lista
-                listaDeLinhas = $('body').find('tr[id^=village_]');
-                //Novo tamanho de lista
-                tamanhoListaLinhas = listaDeLinhas.length;
-
-                indexListaLinhas += 1;
-
-                if (indexListaLinhas >= tamanhoListaLinhas) {
-                    //location.reload();
-                    trocarAldeia();
-                }
+            if (FarmAS == -1) {
+                console.log('Não Pertence ao Grupo Farm AS');
+                trocarAldeia();
             } else {
-                clearInterval(interval_farm);
-
-                setTimeout(
-                    function () {
-                        location.reload();
-                    }, 600000 //10 minutos 
-                );
+                console.log('Pertencente ao Grupo Farm AS');
+                iniciarIntervalFarm();
             }
-        }, 350
-    );
+        },
+        error: function (xhr) {
+            console.log(xhr);
+            alert("Erro!");
+        }
+    });
+
+    function iniciarIntervalFarm() {
+        interval_farm = setInterval(
+            function () {
+                //IDENTIFICAR ABA DO FARM
+                $('title')[0].innerText = `FARM ${location.host.substring(0, 4).toUpperCase()}`;
+
+                verificarCaptch();
+
+                console.log('Linha: ', indexListaLinhas);
+
+                if (tamanhoListaLinhas > 0) { // SE TIVER RELATORIO
+                    farmar(listaDeLinhas[indexListaLinhas], indexListaLinhas);
+                    //Nova lista de relatorios
+                    listaDeLinhas = $('body').find('tr[id^=village_]');
+                    //Novo tamanho de lista de relatorios
+                    tamanhoListaLinhas = listaDeLinhas.length;
+
+                    indexListaLinhas += 1;
+
+                    if (indexListaLinhas >= tamanhoListaLinhas) {
+                        //location.reload();
+                        trocarAldeia();
+                    }
+                } else {
+                    // Parar o farm se nao tiver relatorio no AS
+                    clearInterval(interval_farm);
+
+                    setTimeout(
+                        function () {
+                            location.reload();
+                        }, 600000 //10 minutos
+                    );
+                }
+            }, 275
+        );
+    }
+
+
 
     function farmar(tr, i) {
         setIndex(tr, i);
@@ -99,7 +97,7 @@
             trocarAldeia();
         }
 
-        let valDistanciaMax = 22;
+        let valDistanciaMax = 50;
         let valDistancia = getDistanciaAtk(tr);
         let valMuralha = getLvlMuralha(tr);
         let valRecursos = getTotalResursos2(tr);
@@ -113,33 +111,39 @@
             clearInterval(interval_farm);
             console.log('SEM SPY, TROCAR DE ALDEIA!');
             trocarAldeia();
-        } else if (valDistancia > valDistanciaMax) { //Atk muito longe, nao compensa
+        }
+        else if ((tropasDiponivel.light < 5 && tropasDiponivel.axe < 5 && tropasDiponivel.marcher < 5) && verificarC == true) { //sem cl
+            clearInterval(interval_farm);
+            console.log('SEM CL, TROCAR DE ALDEIA!');
+            trocarAldeia();
+        }
+        else if (valDistancia > valDistanciaMax) { //Atk muito longe
             clearInterval(interval_farm);
             console.log('DISTANCIA MUITO ALTA, TROCAR DE ALDEIA!');
             trocarAldeia();
-        } else if (atkVelho) { //relatorio do atk antigo
+        }
+        else if (atkVelho) { //relatorio do atk antigo
             console.log(tempAtk, 'RELATORIO VELHO!');
-            UI.ErrorMessage("RELATORIO VELHO!");
             farmB(tr);
             qtdAtks += 1;
-        } else if (false/*valMuralha == 0 && valRecursos >= 875 && qtdTropasAtk != 0*/) {
-            console.log('MURALHA ZERO, FARM N!');
-            UI.SuccessMessage("MURALHA ZERO, FARM N!");
-            farmN(tr, qtdTropasAtk);
-        } else if (false/*valMuralha >= 1 && valRecursos >= (valMuralha * 1500) && (tropasDiponivel.light * 80) < valRecursos && qtdTropasAtk != 0*/) {
-            console.log('SEM CVL, MUITOS RECURSOS, FARM N!');
-            UI.SuccessMessage("SEM CVL, MUITOS RECURSOS, FARM N!");
-            farmN(tr, qtdTropasAtk);
-        } else if (
-            (valMuralha <= 1 && valRecursos >= (4 * 80) && tropasDiponivel.light >= 4) ||
-            (valMuralha >= 2 && valRecursos >= 2000 && tropasDiponivel.light > 4)) {
-            console.log('SEM TROPAS, MUITOS RECURSOS, FARM C!');
-            UI.SuccessMessage("SEM TROPAS, MUITOS RECURSOS, FARM C!");
-            farmC(tr);
-            qtdAtks += 1;
         }
-
-
+        else if (/*valMuralha == 0 && valRecursos >= 900 && qtdTropasAtk != 0*/ false) {
+            console.log('MURALHA ZERO, FARM N!');
+            farmN(tr, qtdTropasAtk);
+            //qtdAtks += 1;
+        }
+        else if (/*valMuralha >= 1 && (valRecursos >= (valMuralha * 1000) || valRecursos >= 5000) && (tropasDiponivel.light * 80) < valRecursos && qtdTropasAtk != 0 */ false) {
+            console.log('SEM CVL, MUITOS RECURSOS, FARM N!');
+            farmN(tr, qtdTropasAtk);
+            //qtdAtks += 1;
+        }
+        else if (
+            (valMuralha <= 1 && valRecursos >= (4 * 80) && (tropasDiponivel.light > 0 || tropasDiponivel.axe > 0 || tropasDiponivel.marcher > 0)) ||
+            (valMuralha >= 2 && valRecursos >= 2000) && (tropasDiponivel.light > 0 || tropasDiponivel.axe > 0 || tropasDiponivel.marcher > 0)) {
+            console.log('SEM TROPAS, MUITOS RECURSOS, FARM C!');
+            farmC(tr);
+            //qtdAtks += 1;
+        }
     }
 
 
@@ -161,7 +165,7 @@
         c.click();
     }
 
-    function farmN(tr, qtdTropas) {
+    function farmN(tr, qtdTropas, tempo = 450) {
         if (qtdTropas == 0) {
             console.log('SEM TROPAS SUFICIENTES PARA FARM N');
             return '';
@@ -170,22 +174,26 @@
         //Abre o popup
         $($(tr).find('td')[11]).find('a')[0].click();
 
-        // Espera um tempo para abrir o popup
+        // Espera um tempo até abrir o popup
         setTimeout(
+            //Add as tropas nos input
             function () {
                 $('#unit_input_spear').val(qtdTropas.spear);
                 $('#unit_input_sword').val(qtdTropas.sword);
+                $('#unit_input_archer').val(qtdTropas.archer);
                 $('#unit_input_axe').val(qtdTropas.axe);
                 $('#unit_input_spy').val(1);
 
+                //Clica para confirmar o atk
                 $('#target_attack')[0].click();
 
+                //espera um tempo para confirmar
                 setTimeout(
                     function () {
                         $('#troop_confirm_go')[0].click();
-                    }, 500
+                    }, tempo
                 );
-            }, 500
+            }, tempo
         );
 
     }
@@ -273,7 +281,15 @@
     }
 
     function getQtdTropasDisponiveis() {
-        return {
+        // Quantidade de tropas que devem ser deixadas na aldeias
+        // e não enviadas para o farmN
+        let qtdPraFicar = {
+            'lanca': 1,
+            'espada': 1,
+            'arqueiro': 1
+        };
+
+        let totalDisponivel = {
             'spear': parseInt($('#spear').html()),
             'sword': parseInt($('#sword').html()),
             'axe': parseInt($('#axe').html()),
@@ -282,7 +298,20 @@
             'light': parseInt($('#light').html()),
             'marcher': parseInt($('#marcher').html()),
             'heavy': parseInt($('#heavy').html())
-        }
+        };
+
+        let qtdDisponivel = {
+            'spear': (totalDisponivel.spear - qtdPraFicar.lanca) > 0 ? (totalDisponivel.spear - qtdPraFicar.lanca) : 0,
+            'sword': (totalDisponivel.sword - qtdPraFicar.espada) > 0 ? (totalDisponivel.sword - qtdPraFicar.espada) : 0,
+            'axe': totalDisponivel.axe,
+            'archer': (totalDisponivel.archer - qtdPraFicar.arqueiro) > 0 ? (totalDisponivel.archer - qtdPraFicar.arqueiro) : 0,
+            'spy': totalDisponivel.spy,
+            'light': totalDisponivel.light,
+            'marcher': totalDisponivel.marcher,
+            'heavy': totalDisponivel.heavy
+        };
+
+        return qtdDisponivel;
     }
 
     function calcularTempo(atk, segDiferença) {
@@ -347,11 +376,12 @@
     }
 
     function calcularQtdTropasAtk(saqueDisponivel, tropasDiponivel) {
-        if (((tropasDiponivel.spear * 25) + (tropasDiponivel.sword * 15) + (tropasDiponivel.axe * 10)) >= saqueDisponivel) {
+        if (((tropasDiponivel.spear * 25) + (tropasDiponivel.sword * 15) + (tropasDiponivel.axe * 10) + (tropasDiponivel.archer * 10)) >= saqueDisponivel) {
 
             let saqueCalc = 0;
             let qtdL = 0;
             let qtdE = 0;
+            let qtdA = 0;
             let qtdB = 0;
 
             while (saqueCalc < saqueDisponivel) {
@@ -363,16 +393,21 @@
                     qtdE += 1;
                 }
 
+                if (qtdA < tropasDiponivel.archer) {
+                    qtdA += 1;
+                }
+
                 if (qtdB < tropasDiponivel.axe) {
                     qtdB += 1;
                 }
 
-                saqueCalc = (qtdL * 25) + (qtdE * 15) + (qtdB * 10);
+                saqueCalc = (qtdL * 25) + (qtdE * 15) + (qtdA * 10) + (qtdB * 10);
             }
 
             return {
                 'spear': qtdL,
                 'sword': qtdE,
+                'archer': qtdA,
                 'axe': qtdB
             }
         } else {
@@ -385,6 +420,36 @@
             location.reload();
         } else {
             $('#village_switch_right')[0].click();
+        }
+    }
+
+    function verificarCaptch() {
+        if ($('#bot_check')[0] != undefined) {
+            console.log('RECAPTCHA ATIVO');
+            //UI.ErrorMessage("RECAPTCHA ATIVO");
+            $("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
+            clearInterval(interval_farm);
+            console.log('FARM DESATIVADO!');
+            //UI.SuccessMessage("FARM DESATIVADO!");
+
+            //VERIFICAR SE TEM IMAGEM NO CAPTCHA APOS 3.5s
+            /*
+            setTimeout(
+                function () {
+                    if ($('.g-recaptcha-bubble-arrow')[0] == undefined) {
+                        console.log('RELOAD EM 5 SEGUNDOS');
+                        //UI.SuccessMessage("RELOAD EM 10 SEGUNDOS");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 10000);
+                    } else {
+                        console.log('IMAGEM');
+                        $("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
+                        //alert("IMAGEM");
+                    }
+                }, 3500
+            );
+            */
         }
     }
 })();

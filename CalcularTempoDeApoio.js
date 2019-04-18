@@ -90,6 +90,7 @@ $(listaDeAldeias).each(function (i) {
     let minhaCoordenada = this.childNodes[3].innerText.substr(-15).trim().substring(1, 8);
 
     $.ajax({
+        async: true,
         type: 'GET',
         url: `https://cors.io/?http://br.twstats.com/br91/ajax.php?mode=dcalc&o=${minhaCoordenada}&t=${coord}`,
         dataType: 'text',
@@ -111,8 +112,6 @@ $(listaDeAldeias).each(function (i) {
         }
     });
 });
-
-
 
 function calcularTempo() {
     var listaNovaDeAldeias = $('tr.nowrap');
