@@ -12,7 +12,12 @@
 (function () {
     'use strict';
 
-    var verificarC = false;
+    var target_offset = $("#content_value > div:nth-child(5) > div > form:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(1) > a").offset();
+    var target_top = target_offset.top;
+    $('html, body').animate({ scrollTop: target_top }, 0);
+
+    var verificarC = true;
+    //true = verifica se tem tropas disponiveis no C, se nao tiver troca aldeia, nao verifica os spy
 
     var qtdAtks = 0;
 
@@ -97,7 +102,7 @@
             trocarAldeia();
         }
 
-        let valDistanciaMax = 50;
+        let valDistanciaMax = 60;
         let valDistancia = getDistanciaAtk(tr);
         let valMuralha = getLvlMuralha(tr);
         let valRecursos = getTotalResursos2(tr);
@@ -427,7 +432,7 @@
         if ($('#bot_check')[0] != undefined) {
             console.log('RECAPTCHA ATIVO');
             //UI.ErrorMessage("RECAPTCHA ATIVO");
-            $("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
+            //$("<audio id='audio' autoplay><source src='http://protettordelinks.com/wp-content/baixar/bomba_relogio_alerta_www.toquesengracadosmp3.com.mp3' type='audio/mp3' /></audio>").appendTo("body");
             clearInterval(interval_farm);
             console.log('FARM DESATIVADO!');
             //UI.SuccessMessage("FARM DESATIVADO!");
