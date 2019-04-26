@@ -1,9 +1,3 @@
-
-
-
-
-
-
 javascript: $(document).ready(function () {
     var linhas = $('tr.nowrap');
 

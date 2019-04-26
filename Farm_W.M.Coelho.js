@@ -112,7 +112,7 @@
             console.log('SEM SPY, TROCAR DE ALDEIA!');
             trocarAldeia();
         }
-        else if ((tropasDiponivel.light < 5 && tropasDiponivel.axe < 5 && tropasDiponivel.marcher < 5) && verificarC == true) { //sem cl
+        else if ((tropasDiponivel.light < 5 && tropasDiponivel.marcher < 5) && verificarC == true) { //sem cl
             clearInterval(interval_farm);
             console.log('SEM CL, TROCAR DE ALDEIA!');
             trocarAldeia();
