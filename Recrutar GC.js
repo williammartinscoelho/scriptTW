@@ -84,7 +84,7 @@
     } else {
         controle = JSON.parse(sessionStorage.getItem('controle'));
 
-        if (controle.atual == 0) {
+        if (controle.atual === 0) {
             controle.atual += 1;
             sessionStorage.setItem('controle', JSON.stringify(controle));
             location.reload();
@@ -94,7 +94,7 @@
             } else {
                 clickLinkGroup(controle.atual);
             }
-        } else if (controle.atual == 8) {
+        } else if (controle.atual === 8) {
             sessionStorage.clear();
         }
 

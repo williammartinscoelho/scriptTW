@@ -20,4 +20,6 @@
             }, 60000
         );
     }
+
+    let voice = document.querySelectorAll('.acb');
 })();
