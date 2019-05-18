@@ -22,6 +22,7 @@
       <list>
         <option value="$PROJECT_DIR$/VerificarColeta.js" />
         <option value="$PROJECT_DIR$/Recrutar GC.js" />
+        <option value="$PROJECT_DIR$/getAldeias.js" />
       </list>
     </option>
   </component>
@@ -54,7 +55,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -80,11 +81,12 @@
       <updated>1556682145863</updated>
       <workItem from="1556682148426" duration="238000" />
       <workItem from="1556682398338" duration="159000" />
+      <workItem from="1557320852362" duration="1131000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="397000" />
+    <option name="totallyTimeSpent" value="1528000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="308" y="26" width="1400" height="1000" extended-state="0" />
@@ -150,6 +152,13 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/getAldeias.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="3" lean-forward="true" selection-start-line="6" selection-start-column="3" selection-end-line="6" selection-end-column="3" />
         </state>
       </provider>
     </entry>

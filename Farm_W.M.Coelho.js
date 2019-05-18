@@ -142,10 +142,8 @@
             farmN(tr, qtdTropasAtk);
             //qtdAtks += 1;
         }
-        else if (
-            (valMuralha <= 1 && valRecursos >= (4 * 80) && (tropasDiponivel.light > 0 || tropasDiponivel.axe > 0 || tropasDiponivel.marcher > 0)) ||
-            (valMuralha >= 2 && valRecursos >= 2000) && (tropasDiponivel.light > 0 || tropasDiponivel.axe > 0 || tropasDiponivel.marcher > 0)) {
-            console.log('SEM TROPAS, MUITOS RECURSOS, FARM C!');
+        else if (valRecursos >= (4 * 80) && tropasDiponivel.light > 4 && (tropasDiponivel.light * 80) >= valRecursos) {
+            console.log('FARM C!');
             farmC(tr);
             //qtdAtks += 1;
         }
@@ -437,10 +435,11 @@
             console.log('FARM DESATIVADO!');
             UI.SuccessMessage("FARM DESATIVADO!");
 
-
+            /*
             setTimeout(function () {
                 location.reload();
-            }, 5000);
+            }, 3000);
+            */
 
             //VERIFICAR SE TEM IMAGEM NO CAPTCHA APOS 3.5s
             /*
