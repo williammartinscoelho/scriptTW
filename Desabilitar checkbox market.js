@@ -27,42 +27,55 @@
         return recursos.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
+    function calcular() {
+        var capacidadeArmazem = parseInt($('#storage')[0].innerText)
 
-    var capacidadeArmazem = parseInt($('#storage')[0].innerText)
+        var qtdFerro = parseInt($('#iron')[0].innerText)
+        var qtdArgila = parseInt($('#stone')[0].innerText)
+        var qtdMadeira = parseInt($('#wood')[0].innerText)
 
-    var qtdFerro = parseInt($('#iron')[0].innerText)
-    var qtdArgila = parseInt($('#stone')[0].innerText)
-    var qtdMadeira = parseInt($('#wood')[0].innerText)
+        var qtdFerroChegando = parseInt($('.res.iron')[0].innerText.replace('.', ''))
+        var qtdArgilaChegando = parseInt($('.res.stone')[0].innerText.replace('.', ''))
+        var qtdMadeiraChegando = parseInt($('.res.wood')[0].innerText.replace('.', ''))
 
-    var qtdFerroChegando = parseInt($('.res.iron')[0].innerText.replace('.', ''))
-    var qtdArgilaChegando = parseInt($('.res.stone')[0].innerText.replace('.', ''))
-    var qtdMadeiraChegando = parseInt($('.res.wood')[0].innerText.replace('.', ''))
+        var receberFerro = capacidadeArmazem - (qtdFerro + qtdFerroChegando)
+        var receberArgila = capacidadeArmazem - (qtdArgila + qtdArgilaChegando)
+        var receberMadeira = capacidadeArmazem - (qtdMadeira + qtdMadeiraChegando)
 
-    var receberFerro = capacidadeArmazem - (qtdFerro + qtdFerroChegando)
-    var receberArgila = capacidadeArmazem - (qtdArgila + qtdArgilaChegando)
-    var receberMadeira = capacidadeArmazem - (qtdMadeira + qtdMadeiraChegando)
+        receberMadeira = receberMadeira - (receberMadeira % 1000)
+        receberArgila = receberArgila - (receberArgila % 1000)
+        receberFerro = receberFerro - (receberFerro % 1000)
 
-    receberMadeira = receberMadeira - (receberMadeira % 1000)
-    receberArgila = receberArgila - (receberArgila % 1000)
-    receberFerro = receberFerro - (receberFerro % 1000)
+        var html = `
+        <table id="res_sum" class="vis overview_table" width="250px">
+            <thead>
+                <tr>
+                    <th colspan="3">Recursos a receber</th>
+                </tr>
+            </thead>
+    
+            <tbody>
+                <tr>
+                    <td id="total_wood"><span class="res wood">${addPonto(receberMadeira)}</span></td>
+                    <td id="total_stone"><span class="res stone">${addPonto(receberArgila)}</span></td>
+                    <td id="total_iron"><span class="res iron">${addPonto(receberFerro)}</span></td>
+                </tr>
+            </tbody>
+        </table>`;
 
-    var html = `
-    <table id="res_sum" class="vis overview_table" width="250px">
-        <thead>
-            <tr>
-                <th colspan="3">Recursos a receber</th>
-            </tr>
-        </thead>
+        $($('#recursos_calc')).empty();
+        $($('#recursos_calc')).append(html);
+    }
 
-        <tbody>
-            <tr>
-                <td id="total_wood"><span class="res wood">${addPonto(receberMadeira)}</span></td>
-                <td id="total_stone"><span class="res stone">${addPonto(receberArgila)}</span></td>
-                <td id="total_iron"><span class="res iron">${addPonto(receberFerro)}</span></td>
-            </tr>
-        </tbody>
-    </table>
-`
+    var div = `<div id="recursos_calc"> </div>`;
 
-    $($('#content_value > table:nth-child(3) > tbody > tr > td:nth-child(2) > div:nth-child(3)')).append(html);
+    $($('#content_value > table:nth-child(3) > tbody > tr > td:nth-child(2) > div:nth-child(3)')).append(div);
+
+    calcular();
+
+    document.querySelector("[name=call-resources]").addEventListener("submit", function () {
+        setTimeout(function () {
+            calcular();
+        }, 500);
+    });
 })();
