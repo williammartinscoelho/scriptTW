@@ -71,7 +71,7 @@
             let argila_chegando = get_recursos_chegando('.res.stone');
             let madeira_chegando = get_recursos_chegando('.res.wood');
 
-            // QUANTIDADE DE RECURSOS QUE POSSO RECEBER ATÈ ENCHAR O ARMAZEM
+            // QUANTIDADE DE RECURSOS QUE POSSO RECEBER ATÈ ENCHER O ARMAZEM
             let receber_ferro = capacidade_armazem - (ferro_na_aldeia + ferro_chegando);
             let receber_argila = capacidade_armazem - (argila_na_aldeia + argila_chegando);
             let receber_madeira = capacidade_armazem - (madeira_na_aldeia + madeira_chegando);
@@ -79,6 +79,20 @@
             receber_madeira = receber_madeira - (receber_madeira % 1000);
             receber_argila = receber_argila - (receber_argila % 1000);
             receber_ferro = receber_ferro - (receber_ferro % 1000);
+
+            let receber_max = 130000;
+
+            if (receber_madeira > receber_max) {
+                receber_madeira = receber_max;
+            }
+
+            if (receber_argila > receber_max) {
+                receber_argila = receber_max;
+            }
+
+            if (receber_ferro > receber_max) {
+                receber_ferro = receber_max;
+            }
             //==============================================================
             //==============================================================
             //==============================================================
@@ -87,21 +101,27 @@
             //==============================================================
             // VERIFICAÇÕES PARA PAUSAR O BOT
             //==============================================================
-            if (receber_madeira <= 1000 && mandar_este_recurso === 'madeira') {
+            if (receber_madeira < 1000 && mandar_este_recurso === 'madeira') {
                 clearInterval(envio_de_recursos);
                 console.log('MADEIRA COMPLETO');
                 return false;
             }
 
-            if (receber_argila <= 1000 && mandar_este_recurso === 'argila') {
+            if (receber_argila < 1000 && mandar_este_recurso === 'argila') {
                 clearInterval(envio_de_recursos);
                 console.log('ARGILA COMPLETO');
                 return false;
             }
 
-            if (receber_ferro <= 1000 && mandar_este_recurso === 'ferro') {
+            if (receber_ferro < 1000 && mandar_este_recurso === 'ferro') {
                 clearInterval(envio_de_recursos);
                 console.log('FERRO COMPLETO');
+                return false;
+            }
+
+            if (cont_index >= lista_de_linhas.length) {
+                clearInterval(envio_de_recursos);
+                console.log('FIM DA LISTA');
                 return false;
             }
 
@@ -143,12 +163,12 @@
             let input_argila = $(lista_de_linhas[cont_index]).find('.hide_toggle')[1];
             let input_ferro = $(lista_de_linhas[cont_index]).find('.hide_toggle')[2];
 
-
+            let verificar_maior_qtd_recurso = false;
             let maior_qtd_recurso = get_mais_recursos(lista_de_linhas[cont_index]);
             console.log('maior_qtd_recurso =', maior_qtd_recurso);
 
 
-            if (maior_qtd_recurso === 'madeira' && mandar_este_recurso === maior_qtd_recurso) {
+            if (mandar_este_recurso === 'madeira') {
                 // MANDAR MADEIRA
                 console.log('MANDAR MADEIRA');
                 console.log('madeira_disponivel =', madeira_disponivel);
@@ -164,7 +184,7 @@
 
                 analisar_envio_de_recursos(o);
 
-            } else if (maior_qtd_recurso === 'argila' && mandar_este_recurso === maior_qtd_recurso) {
+            } else if (mandar_este_recurso === 'argila') {
                 // MANDAR ARGILA
                 console.log('MANDAR ARGILA');
                 console.log('argila_disponivel =', argila_disponivel);
@@ -180,7 +200,7 @@
 
                 analisar_envio_de_recursos(o);
 
-            } else if (maior_qtd_recurso === 'ferro' && mandar_este_recurso === maior_qtd_recurso) {
+            } else if (mandar_este_recurso === 'ferro') {
                 // MANDAR FERRO
                 console.log('MANDAR FERRO');
                 console.log('ferro_disponivel =', ferro_disponivel);
@@ -196,16 +216,7 @@
 
                 analisar_envio_de_recursos(o);
             }
-
-            // $(input_argila).val(argila_disponivel);
-
-            // btn_submit.click();
-
-
-
-
-        }, 2000);
-
+        }, 850);
 
 
         function analisar_envio_de_recursos(o) {
@@ -244,11 +255,15 @@
         }
 
 
-
-
-
         function get_capacidade_armazem() {
             let capacidade_armazem = parseInt($('#storage')[0].innerText);
+
+            if (capacidade_armazem > 150000) {
+                capacidade_armazem = 150000;
+            } else {
+                capacidade_armazem = capacidade_armazem - 10000;
+            }
+
             return capacidade_armazem;
         }
 
@@ -266,14 +281,8 @@
         }
 
 
-
-
         function get_recurso_disponivel_para_envio(tr, classe_name) {
-            //let recurso_disponivel_para_envio = parseInt($(tr).find(classe_name)[0].innerText.replace('.', ''));
-
             let recurso_disponivel_para_envio = parseInt($(tr).find(classe_name).text().trim().replace('.', ''));
-
-
 
             //Tirar as centenas, unidades e dezenas
             recurso_disponivel_para_envio = recurso_disponivel_para_envio - (recurso_disponivel_para_envio % 1000);

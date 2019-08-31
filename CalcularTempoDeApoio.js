@@ -1,4 +1,5 @@
-var html = `
+javascript: $(document).ready(function () {
+    var html = `
 <th style="text-align:center">
     Dist.
 </th>
@@ -89,15 +90,39 @@ $(listaDeAldeias).each(function (i) {
     //Coordenada da aldeia atual
     let minhaCoordenada = this.childNodes[3].innerText.substr(-15).trim().substring(1, 8);
 
-    $.ajax({
-        async: true,
-        type: 'GET',
-        url: `https://cors.io/?http://br.twstats.com/br91/ajax.php?mode=dcalc&o=${minhaCoordenada}&t=${coord}`,
-        dataType: 'text',
-        beforeSend: function () {
-        },
-        success: function (retorno) {
-            let linhaComTempos = $(retorno).find('tr td');
+    // $.ajax({
+    //     async: true,
+    //     type: 'GET',
+    //     url: `https://test.cors.workers.dev/https://br.twstats.com/br91/ajax.php?mode=dcalc&o=${minhaCoordenada}&t=${coord}`,
+    //     dataType: 'text',
+    //     beforeSend: function () {
+    //     },
+    //     success: function (retorno) {
+    //         let linhaComTempos = $(retorno).find('tr td');
+
+    //         $(linhaComTempos).each(function (j) {
+    //             $(this).addClass('tempo');
+    //             listaDeAldeias[i].append(this);
+    //         });
+
+    //         calcularTempo();
+    //     },
+    //     error: function (xhr) {
+    //         console.log(xhr);
+    //         alert("Erro!");
+    //     }
+    // });
+
+
+
+    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://br.twstats.com/br91/ajax.php?mode=dcalc&o=${minhaCoordenada}&t=${coord}`)}`)
+        .then(response => {
+          if (response.ok) return response.json()
+          throw new Error('Network response was not ok.')
+        })
+        .then(data => {
+            console.log(data.contents);
+            let linhaComTempos = $(data.contents).find('tr td');
 
             $(linhaComTempos).each(function (j) {
                 $(this).addClass('tempo');
@@ -105,12 +130,7 @@ $(listaDeAldeias).each(function (i) {
             });
 
             calcularTempo();
-        },
-        error: function (xhr) {
-            console.log(xhr);
-            alert("Erro!");
-        }
-    });
+        });
 });
 
 function calcularTempo() {
@@ -129,3 +149,4 @@ function calcularTempo() {
         });
     });
 }
+});
